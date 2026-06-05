@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard GCPS 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root{--azul:#1a3a5c;--azulm:#2563a8;--azulc:#3b82f6;--verde:#059669;--verdec:#10b981;--naranja:#d97706;--rojo:#dc2626;--morado:#7c3aed;--gs:#1e293b;--gm:#334155;--gc:#94a3b8;--bg:#f0f4f8;--borde:#e2e8f0;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--gs);}
+.header{background:linear-gradient(135deg,#0f2744,var(--azul),var(--azulm));color:white;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(15,39,68,.5);}
+.header-left{display:flex;align-items:center;gap:14px;}
+.logo{width:44px;height:44px;background:rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.header h1{font-size:18px;font-weight:800;}
+.header p{font-size:11px;opacity:.65;margin-top:2px;}
+.clock{font-size:22px;font-weight:700;font-family:monospace;text-align:right;}
+.fecha-txt{font-size:11px;opacity:.7;margin-top:2px;text-align:right;}
+.rbtn{margin-top:8px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white;padding:5px 14px;border-radius:6px;font-family:'Sora',sans-serif;font-size:11px;cursor:pointer;}
+.rbtn:hover{background:rgba(255,255,255,.25);}
+.main{max-width:1600px;margin:0 auto;padding:22px 28px;}
+
+/* KPIs */
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px;}
+.kpi{background:white;border-radius:14px;padding:18px 20px;box-shadow:0 2px 10px rgba(0,0,0,.07);display:flex;align-items:center;gap:14px;}
+.kpi-ico{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.kpi.az .kpi-ico{background:#dbeafe;} .kpi.vd .kpi-ico{background:#d1fae5;} .kpi.nr .kpi-ico{background:#fef3c7;}
+.kpi-v{font-size:24px;font-weight:800;color:var(--azul);line-height:1;}
+.kpi-l{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--gc);margin-top:4px;}
+.kpi-s{font-size:11px;color:var(--gc);margin-top:3px;}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:20px;background:white;padding:6px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);width:fit-content;}
+.tab-btn{padding:8px 20px;border-radius:8px;border:none;cursor:pointer;font-family:'Sora',sans-serif;font-size:12px;font-weight:600;color:var(--gm);background:transparent;transition:.2s;}
+.tab-btn.on{background:var(--azulm);color:white;}
+.tab-btn:hover:not(.on){background:var(--bg);}
+.tab-panel{display:none;} .tab-panel.on{display:block;}
+
+/* CARDS */
+.card{background:white;border-radius:14px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.07);}
+.sec-title{font-size:12px;font-weight:700;color:var(--azul);margin-bottom:14px;border-left:4px solid var(--azulc);padding-left:8px;display:flex;justify-content:space-between;align-items:center;}
+.sec-title small{font-size:10px;color:var(--gc);font-weight:400;}
+
+/* GRID COMPARATIVO */
+.comp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
+.comp-grid.g2{grid-template-columns:repeat(2,1fr);}
+.comp-grid.g4{grid-template-columns:repeat(4,1fr);}
+.comp-card{background:white;border-radius:14px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.07);cursor:pointer;transition:.2s;border:2px solid transparent;}
+.comp-card:hover{border-color:var(--azulc);transform:translateY(-2px);}
+.comp-card.selected{border-color:var(--azulm);box-shadow:0 4px 20px rgba(37,99,168,.2);}
+.comp-card-title{font-size:12px;font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
+.cbar-wrap{margin-bottom:8px;}
+.cbar-label{font-size:10px;color:var(--gc);margin-bottom:3px;display:flex;justify-content:space-between;}
+.cbar-bg{height:22px;background:#f1f5f9;border-radius:6px;overflow:hidden;position:relative;}
+.cbar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:8px;font-size:10px;font-weight:700;color:white;transition:width 1s ease;min-width:0;}
+.cbar-val{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:10px;font-weight:700;color:var(--gm);}
+.cpct{font-size:18px;font-weight:800;margin-top:10px;}
+.cpct-bar{height:6px;background:#f1f5f9;border-radius:3px;margin-top:6px;overflow:hidden;}
+.cpct-fill{height:100%;border-radius:3px;transition:width 1s ease;}
+
+/* DRILL DOWN */
+.drill-section{margin-bottom:20px;}
+.drill-title{font-size:13px;font-weight:700;color:var(--azul);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.drill-title .breadcrumb{font-size:11px;color:var(--gc);font-weight:400;}
+.drill-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+
+/* BARRAS COMPARATIVAS APILADAS */
+.bar-comp{background:white;border-radius:14px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.07);}
+
+/* TABLA */
+.ptable{width:100%;border-collapse:collapse;font-size:13px;}
+.ptable th{background:#f1f5f9;padding:10px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--gm);border-bottom:2px solid var(--borde);text-align:right;white-space:nowrap;}
+.ptable th:first-child{text-align:left;}
+.ptable td{padding:10px 12px;border-bottom:1px solid var(--borde);text-align:right;font-size:12px;white-space:nowrap;}
+.ptable td:first-child{text-align:left;}
+.ptable tr:last-child td{border-bottom:none;font-weight:700;background:#f8fafc;font-size:13px;}
+.ptable tr:hover:not(:last-child) td{background:#f8fafc;}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;}
+.b1{background:#dbeafe;color:#1d4ed8;}.b2{background:#d1fae5;color:#065f46;}.b3{background:#fef3c7;color:#92400e;}.b4{background:#ede9fe;color:#5b21b6;}
+
+/* PROGRESS BARS POI */
+.poi-prog{display:flex;flex-direction:column;gap:12px;}
+.poi-row{} 
+.poi-hdr{display:flex;justify-content:space-between;margin-bottom:4px;}
+.poi-name{font-size:12px;font-weight:600;color:var(--gm);}
+.poi-val{font-size:12px;font-weight:700;}
+.poi-bar{height:10px;background:#f1f5f9;border-radius:5px;overflow:hidden;}
+.poi-fill{height:100%;border-radius:5px;transition:width .8s;}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px;}
+.grid12{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-bottom:20px;}
+.chart-wrap{position:relative;}
+.ch240{height:240px;} .ch200{height:200px;} .ch280{height:280px;}
+.last-upd{text-align:center;font-size:11px;color:var(--gc);padding:8px 0;}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-left">
+    <div class="logo">📊</div>
+    <div>
+      <h1>Dashboard POI 2026 — GCPS · EsSalud</h1>
+      <p>Solo lectura · Actualización en tiempo real · Gerencia Central de Prestaciones de Salud</p>
+    </div>
+  </div>
+  <div>
+    <div class="clock" id="clock">--:--:--</div>
+    <div class="fecha-txt" id="fecha"></div>
+    <button class="rbtn" onclick="cargarTodo()">🔄 Actualizar</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi az">
+      <div class="kpi-ico">💰</div>
+      <div><div class="kpi-v" id="k1">S/ —</div><div class="kpi-l">Presupuesto Programado</div><div class="kpi-s">Total POI 2026</div></div>
+    </div>
+    <div class="kpi vd">
+      <div class="kpi-ico">✅</div>
+      <div><div class="kpi-v" id="k2">S/ —</div><div class="kpi-l">Presupuesto Ejecutado</div><div class="kpi-s" id="k2s">monto acumulado</div></div>
+    </div>
+    <div class="kpi nr">
+      <div class="kpi-ico">🏦</div>
+      <div><div class="kpi-v" id="k3">S/ —</div><div class="kpi-l">Saldo Disponible</div><div class="kpi-s">programado − ejecutado</div></div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn on" onclick="verTab('ppto',this)">💰 Presupuesto</button>
+    <button class="tab-btn" onclick="verTab('poi',this)">📋 POI Actividades</button>
+    <button class="tab-btn" onclick="verTab('consolidado',this)">📊 Consolidado</button>
+  </div>
+
+  <!-- TAB PRESUPUESTO -->
+  <div id="tab-ppto" class="tab-panel on">
+
+    <!-- FILA 1: Comparativo GCPS total + por gerencia -->
+    <div class="comp-grid" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr;margin-bottom:20px;">
+
+      <div class="comp-card" id="cc-GCPS" onclick="drillGer('TODAS')">
+        <div class="comp-card-title" style="color:var(--azul);">GCPS — TOTAL <span style="font-size:10px;color:var(--gc);">▼ clic</span></div>
+        <div class="cbar-wrap">
+          <div class="cbar-label"><span>Programado</span><span id="cc-GCPS-p">S/ —</span></div>
+          <div class="cbar-bg"><div class="cbar-fill" id="cc-GCPS-pb" style="background:#cbd5e1;width:100%;"></div></div>
+        </div>
+        <div class="cbar-wrap">
+          <div class="cbar-label"><span>Ejecutado</span><span id="cc-GCPS-e">S/ —</span></div>
+          <div class="cbar-bg"><div class="cbar-fill" id="cc-GCPS-eb" style="background:var(--verde);width:0%;"></div></div>
+        </div>
+        <div class="cpct-bar"><div class="cpct-fill" id="cc-GCPS-pf" style="background:var(--verde);width:0%;"></div></div>
+        <div class="cpct" id="cc-GCPS-pct" style="color:var(--verde);">0%</div>
+      </div>
+
+      <div class="comp-card" id="cc-GPNAIS" onclick="drillGer('GPNAIS')">
+        <div class="comp-card-title" style="color:#1d4ed8;">GPNAIS <span style="font-size:10px;color:var(--gc);">▼</span></div>
+        <div class="cbar-wrap">
+          <div class="cbar-label"><span>Prog.</span><span id="cc-GPNAIS-p">—</span></div>
+          <div class="cbar-bg"><div class="cbar-fill" id="cc-GPNAIS-pb" style="background:#bfdbfe;width:100%;"></div></div>
+        </div>
+        <div class="cbar-wrap">
+          <div class="cbar-label"><span>Ejec.</span><span id="cc-GPNAIS-e">—</span></div>
+          <div class="cbar-bg"><div class="cbar-fill" id="cc-GPNAIS-eb" style="background:#2563a8;width:0%;"></div></div>
+        </div>
+        <div class="cpct-bar"><div class="cpct-fill" id="cc-GPNAIS-pf" style="background:#2563a8;width:0%;"></div></div>
+        <div class="cpct" id="cc-GPNAIS-pct" style="color:#2563a8;">0%</div>
+      </div>
+
+      <div class="comp-card" id="cc-GSAM" onclick="drillGer('GSAM')">
+        <div class="comp-card-title" style="color:#065f46;">GSAM <span style="font-size:10px;color:var(--gc);">▼</span></div>
+        <div class="cbar-wrap">
+          <div class="cbar-label"><span>Prog.</span><span id="cc-GSAM-p">—</span></div>
+          <div class="cbar-bg"><div class="cbar-fill" id="cc-GSAM-pb" style="background:#a7f3d0;width:100%;"></div></div>
+        </div>
+        <div class="cbar-wrap">
+          <div class="cbar-label"><span>Ejec.</span><span id="cc-GSAM-e">—</span></div>
+          <div class="cbar-bg"><div class="cbar-fill" id="cc-GSAM-eb" style="background:var(--verde);width:0%;"></div></div>
+        </div>
+        <div class="cpct-bar"><div class="cpct-fill" id="cc-GSAM-pf" style="background:var(--verde);width:0%;"></div></div>
+        <div class="cpct" id="cc-GSAM-pct" style="color:var(--verde);">0%</div>
+      </div>
+
+      <div class="comp-card" id="cc-GAPR" onclick="drillGer('GAPR')">
+        <div class="comp-card-title" style="color:#92400e;">GAPR <span style="font-size:10px;color:var(--gc);">▼</span></div>
+        <div class="cbar-wrap">
+          <div class="cbar-label"><span>Prog.</span><span id="cc-GAPR-p">—</span></div>
+          <div class="cbar-bg"><div class="cbar-fill" id="cc-GAPR-pb" style="background:#fde68a;width:100%;"></div></div>
+        </div>
+        <div class="cbar-wrap">
+          <div class="cbar-label"><span>Ejec.</span><span id="cc-GAPR-e">—</span></div>
+          <div class="cbar-bg"><div class="cbar-fill" id="cc-GAPR-eb" style="background:var(--naranja);width:0%;"></div></div>
+        </div>
+        <div class="cpct-bar"><div class="cpct-fill" id="cc-GAPR-pf" style="background:var(--naranja);width:0%;"></div></div>
+        <div class="cpct" id="cc-GAPR-pct" style="color:var(--naranja);">0%</div>
+      </div>
+
+      <div class="comp-card" id="cc-OIIS" onclick="drillGer('OIIS')">
+        <div class="comp-card-title" style="color:#5b21b6;">OIIS <span style="font-size:10px;color:var(--gc);">▼</span></div>
+        <div class="cbar-wrap">
+          <div class="cbar-label"><span>Prog.</span><span id="cc-OIIS-p">—</span></div>
+          <div class="cbar-bg"><div class="cbar-fill" id="cc-OIIS-pb" style="background:#ddd6fe;width:100%;"></div></div>
+        </div>
+        <div class="cbar-wrap">
+          <div class="cbar-label"><span>Ejec.</span><span id="cc-OIIS-e">—</span></div>
+          <div class="cbar-bg"><div class="cbar-fill" id="cc-OIIS-eb" style="background:var(--morado);width:0%;"></div></div>
+        </div>
+        <div class="cpct-bar"><div class="cpct-fill" id="cc-OIIS-pf" style="background:var(--morado);width:0%;"></div></div>
+        <div class="cpct" id="cc-OIIS-pct" style="color:var(--morado);">0%</div>
+      </div>
+
+    </div>
+
+    <!-- DRILL DOWN: Sub Gerencia -->
+    <div id="drill-sg" style="display:none;margin-bottom:20px;">
+      <div class="drill-title">
+        <span id="drill-sg-title">Sub Gerencias</span>
+        <span class="breadcrumb" style="cursor:pointer;" onclick="cerrarDrill()">✕ Cerrar</span>
+      </div>
+      <div class="comp-grid g4" id="drill-sg-cards"></div>
+    </div>
+
+    <!-- DRILL DOWN: Conceptos por Sub Gerencia -->
+    <div id="drill-con" style="display:none;margin-bottom:20px;">
+      <div class="drill-title">
+        <span id="drill-con-title">Conceptos</span>
+        <span class="breadcrumb" style="cursor:pointer;" onclick="cerrarDrillCon()">✕ Cerrar</span>
+      </div>
+      <div class="comp-grid" style="grid-template-columns:repeat(5,1fr);" id="drill-con-cards"></div>
+    </div>
+
+    <!-- Gráfico de barras comparativo + tabla -->
+    <div class="grid12">
+      <div class="card">
+        <div class="sec-title">Programado vs Ejecutado — Por Gerencia (S/)</div>
+        <div class="chart-wrap ch280"><canvas id="chartComp"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="sec-title">Distribución Ejecutada</div>
+        <div class="chart-wrap ch280"><canvas id="chartTorta"></canvas></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TAB POI -->
+  <div id="tab-poi" class="tab-panel">
+    <div class="grid2">
+      <div class="card">
+        <div class="sec-title">Avance POI por Gerencia — Ejecuciones vs Meta</div>
+        <div class="chart-wrap ch240"><canvas id="chartPOI"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="sec-title">% Avance por Tipo de Actividad</div>
+        <div class="poi-prog" id="poiProg" style="padding-top:8px;"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="sec-title">Resumen POI — Ejecuciones por Gerencia y Tipo</div>
+      <div style="overflow-x:auto;">
+        <table class="ptable">
+          <thead><tr><th>Gerencia</th><th>Formulación</th><th>Meta</th><th>Monitoreo</th><th>Meta</th><th>Asist. Técnica</th><th>Meta</th><th>Otras</th><th>Meta</th><th>Total Ejec.</th><th>Total Meta</th><th>% Avance</th></tr></thead>
+          <tbody id="tabPOI"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB CONSOLIDADO -->
+  <div id="tab-consolidado" class="tab-panel">
+    <div class="card" style="margin-bottom:20px;">
+      <div class="sec-title">Presupuesto Programado vs Ejecutado — Detalle por Sub Gerencia y Concepto</div>
+      <div style="overflow-x:auto;">
+        <table class="ptable" id="tabConsolidado"></table>
+      </div>
+    </div>
+  </div>
+
+  <div class="last-upd">Última actualización: <span id="lastUpd">—</span> · Auto-refresh cada 60 seg</div>
+</div>
+
+<script>
+var SURL='https://krikgncyptyjjutzaufz.supabase.co';
+var SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyaWtnbmN5cHR5amp1dHphdWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NzYzOTYsImV4cCI6MjA5NjE1MjM5Nn0.8Kzgpf8UhASf-hgN7jix-82ZeNsUpE7R-EF6zpZCZCI';
+
+var METAS={GPNAIS:{F:19,M:11,A:68,O:0},GAPR:{F:6,M:18,A:18,O:1},GSAM:{F:2,M:23,A:15,O:0},OIIS:{F:1,M:0,A:5,O:6}};
+var TOTAL_PROG=546564;
+var GERS=['GPNAIS','GSAM','GAPR','OIIS'];
+var CONCEPTOS=['Viaticos','Pasajes','Locadores','Alimentos','Otros Servicios'];
+var COLS_GER={GPNAIS:'#2563a8',GSAM:'#059669',GAPR:'#d97706',OIIS:'#7c3aed'};
+
+var PROG_PPTO={
+  'GPNAIS':{'SGPE':[64000,0,0,0,0],'SGNAPS':[37364,6191,0,22208,7446],'SGNADYT':[0,0,34000,3000,0],'SGNSS':[5760,6915,0,1500,0]},
+  'GSAM':{'GENERAL':[16000,20290,63500,5322,0]},
+  'GAPR':{'SGMC':[8960,9400,0,0,40554],'SGPSYPE':[0,0,0,15965,10000],'SGCPAP':[16258,14592,80000,0,600]},
+  'OIIS':{'GENERAL':[16520,10400,0,16231,25700]}
+};
+
+var chartPOI=null,chartComp=null,chartTorta=null;
+var ejecPPTO_data={};
+var ejecPOI_data={};
+
+setInterval(function(){
+  var n=new Date();
+  document.getElementById('clock').textContent=n.toLocaleTimeString('es-PE');
+  document.getElementById('fecha').textContent=n.toLocaleDateString('es-PE',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+},1000);
+
+function apiGet(p){return fetch(SURL+'/rest/v1/'+p,{headers:{'apikey':SKEY,'Authorization':'Bearer '+SKEY}}).then(function(r){return r.json();});}
+function fmtS(n){if(n>=1000000)return 'S/ '+(n/1000000).toFixed(1)+'M';if(n>=1000)return 'S/ '+(n/1000).toFixed(0)+'K';return 'S/ '+n;}
+function fmtN(n){return Number(n||0).toLocaleString('es-PE');}
+function pctC(e,p){return p>0?Math.min(100,((e/p)*100)).toFixed(1):'0.0';}
+function pctColor(p){var v=parseFloat(p);return v>=80?'var(--verde)':v>=40?'var(--naranja)':'var(--rojo)';}
+
+function cargarTodo(){
+  Promise.all([
+    apiGet('ejecucion_poi?select=gerencia,tipo_actividad,cantidad'),
+    apiGet('ejecucion_presupuestal?select=gerencia,sub_gerencia,concepto,monto')
+  ]).then(function(res){
+    var poi=Array.isArray(res[0])?res[0]:[];
+    var ppto=Array.isArray(res[1])?res[1]:[];
+    procesarPOI(poi);
+    procesarPPTO(ppto);
+    renderKPIs();
+    renderCompCards();
+    renderChartComp();
+    renderChartTorta();
+    renderPOI();
+    renderConsolidado();
+    document.getElementById('lastUpd').textContent=new Date().toLocaleTimeString('es-PE');
+  });
+}
+
+function procesarPOI(poi){
+  ejecPOI_data={};
+  GERS.forEach(function(g){ejecPOI_data[g]={F:0,M:0,A:0,O:0};});
+  poi.forEach(function(r){
+    if(!ejecPOI_data[r.gerencia]) return;
+    var t=r.tipo_actividad||'';
+    if(t.indexOf('ormulac')>-1) ejecPOI_data[r.gerencia].F+=r.cantidad;
+    else if(t.indexOf('onitoreo')>-1||t.indexOf('upervisi')>-1) ejecPOI_data[r.gerencia].M+=r.cantidad;
+    else if(t.indexOf('sistencia')>-1) ejecPOI_data[r.gerencia].A+=r.cantidad;
+    else ejecPOI_data[r.gerencia].O+=r.cantidad;
+  });
+}
+
+function procesarPPTO(ppto){
+  ejecPPTO_data={};
+  GERS.forEach(function(g){
+    ejecPPTO_data[g]={total:0,sgs:{}};
+    Object.keys(PROG_PPTO[g]).forEach(function(sg){
+      ejecPPTO_data[g].sgs[sg]={total:0,cons:{}};
+      CONCEPTOS.forEach(function(c){ejecPPTO_data[g].sgs[sg].cons[c]=0;});
+    });
+  });
+  ppto.forEach(function(r){
+    var g=(r.gerencia||'').split('-')[0];
+    var sg=r.sub_gerencia||'GENERAL';
+    if(!ejecPPTO_data[g]) return;
+    if(!ejecPPTO_data[g].sgs[sg]) ejecPPTO_data[g].sgs[sg]={total:0,cons:{}};
+    var m=Number(r.monto);
+    ejecPPTO_data[g].total+=m;
+    ejecPPTO_data[g].sgs[sg].total+=m;
+    if(ejecPPTO_data[g].sgs[sg].cons[r.concepto]!==undefined)
+      ejecPPTO_data[g].sgs[sg].cons[r.concepto]+=m;
+    else
+      ejecPPTO_data[g].sgs[sg].cons[r.concepto]=(ejecPPTO_data[g].sgs[sg].cons[r.concepto]||0)+m;
+  });
+}
+
+function getProgGer(g){
+  var t=[0,0,0,0,0];
+  Object.keys(PROG_PPTO[g]||{}).forEach(function(sg){
+    PROG_PPTO[g][sg].forEach(function(v,i){t[i]+=v;});
+  });
+  return t;
+}
+
+function renderKPIs(){
+  var totalEjec=GERS.reduce(function(s,g){return s+(ejecPPTO_data[g]?ejecPPTO_data[g].total:0);},0);
+  document.getElementById('k1').textContent=fmtS(TOTAL_PROG);
+  document.getElementById('k2').textContent=fmtS(totalEjec);
+  document.getElementById('k2s').textContent=pctC(totalEjec,TOTAL_PROG)+'% ejecutado';
+  document.getElementById('k3').textContent=fmtS(TOTAL_PROG-totalEjec);
+}
+
+function renderCompCards(){
+  var totalEjec=GERS.reduce(function(s,g){return s+(ejecPPTO_data[g]?ejecPPTO_data[g].total:0);},0);
+  // GCPS total
+  var pct=pctC(totalEjec,TOTAL_PROG);
+  var col=pctColor(pct);
+  document.getElementById('cc-GCPS-p').textContent=fmtS(TOTAL_PROG);
+  document.getElementById('cc-GCPS-e').textContent=fmtS(totalEjec);
+  document.getElementById('cc-GCPS-pb').style.width='100%';
+  document.getElementById('cc-GCPS-eb').style.width=pct+'%';
+  document.getElementById('cc-GCPS-pf').style.width=pct+'%';
+  document.getElementById('cc-GCPS-pf').style.background=col;
+  document.getElementById('cc-GCPS-pct').textContent=pct+'%';
+  document.getElementById('cc-GCPS-pct').style.color=col;
+
+  GERS.forEach(function(g){
+    var prog=getProgGer(g).reduce(function(a,b){return a+b;},0);
+    var ejec=ejecPPTO_data[g]?ejecPPTO_data[g].total:0;
+    var p=pctC(ejec,prog);
+    var c=pctColor(p);
+    document.getElementById('cc-'+g+'-p').textContent=fmtS(prog);
+    document.getElementById('cc-'+g+'-e').textContent=fmtS(ejec);
+    document.getElementById('cc-'+g+'-eb').style.width=p+'%';
+    document.getElementById('cc-'+g+'-pf').style.width=p+'%';
+    document.getElementById('cc-'+g+'-pct').textContent=p+'%';
+    document.getElementById('cc-'+g+'-pct').style.color=c;
+  });
+}
+
+function drillGer(g){
+  document.getElementById('drill-sg').style.display='none';
+  document.getElementById('drill-con').style.display='none';
+  document.querySelectorAll('.comp-card').forEach(function(c){c.classList.remove('selected');});
+  if(g==='TODAS'){document.getElementById('cc-GCPS').classList.add('selected');}
+  else document.getElementById('cc-'+g)&&document.getElementById('cc-'+g).classList.add('selected');
+
+  var sgs=g==='TODAS'?null:Object.keys(PROG_PPTO[g]||{});
+  if(!sgs||sgs.length===0) return;
+
+  document.getElementById('drill-sg-title').textContent='Sub Gerencias de '+g+' — Programado vs Ejecutado ▼ clic para ver conceptos';
+  var html='';
+  sgs.forEach(function(sg){
+    var prog=PROG_PPTO[g][sg].reduce(function(a,b){return a+b;},0);
+    var ejec=(ejecPPTO_data[g]&&ejecPPTO_data[g].sgs[sg])?ejecPPTO_data[g].sgs[sg].total:0;
+    var p=pctC(ejec,prog); var c=pctColor(p); var col=COLS_GER[g]||'#2563a8';
+    html+='<div class="comp-card" onclick="drillSG(\''+g+'\',\''+sg+'\')"><div class="comp-card-title" style="color:'+col+';">'+sg+'<span style="font-size:10px;color:var(--gc);">▼</span></div>';
+    html+='<div class="cbar-wrap"><div class="cbar-label"><span>Prog.</span><span>'+fmtS(prog)+'</span></div><div class="cbar-bg"><div class="cbar-fill" style="background:#e2e8f0;width:100%;"></div></div></div>';
+    html+='<div class="cbar-wrap"><div class="cbar-label"><span>Ejec.</span><span>'+fmtS(ejec)+'</span></div><div class="cbar-bg"><div class="cbar-fill" style="background:'+col+';width:'+p+'%;"></div></div></div>';
+    html+='<div class="cpct-bar"><div class="cpct-fill" style="background:'+c+';width:'+p+'%;"></div></div>';
+    html+='<div class="cpct" style="color:'+c+';">'+p+'%</div></div>';
+  });
+  document.getElementById('drill-sg-cards').innerHTML=html;
+  document.getElementById('drill-sg').style.display='block';
+}
+
+function drillSG(g,sg){
+  var prog=PROG_PPTO[g][sg];
+  var ejecCons=(ejecPPTO_data[g]&&ejecPPTO_data[g].sgs[sg])?ejecPPTO_data[g].sgs[sg].cons:{};
+  document.getElementById('drill-con-title').textContent='Conceptos: '+g+' — '+sg;
+  var html='';
+  var col=COLS_GER[g]||'#2563a8';
+  CONCEPTOS.forEach(function(c,i){
+    var pr=prog[i]||0; var ej=ejecCons[c]||0;
+    var p=pctC(ej,pr); var pc=pctColor(p);
+    html+='<div class="comp-card"><div class="comp-card-title" style="color:'+col+';font-size:11px;">'+c+'</div>';
+    html+='<div class="cbar-wrap"><div class="cbar-label"><span>Prog.</span><span>'+fmtS(pr)+'</span></div><div class="cbar-bg"><div class="cbar-fill" style="background:#e2e8f0;width:100%;"></div></div></div>';
+    html+='<div class="cbar-wrap"><div class="cbar-label"><span>Ejec.</span><span>'+fmtS(ej)+'</span></div><div class="cbar-bg"><div class="cbar-fill" style="background:'+col+';width:'+(pr>0?p:'0')+'%;"></div></div></div>';
+    html+='<div class="cpct-bar"><div class="cpct-fill" style="background:'+pc+';width:'+(pr>0?p:'0')+'%;"></div></div>';
+    html+='<div class="cpct" style="color:'+pc+';">'+(pr>0?p+'%':'—')+'</div></div>';
+  });
+  document.getElementById('drill-con-cards').innerHTML=html;
+  document.getElementById('drill-con').style.display='block';
+}
+
+function cerrarDrill(){document.getElementById('drill-sg').style.display='none';document.getElementById('drill-con').style.display='none';}
+function cerrarDrillCon(){document.getElementById('drill-con').style.display='none';}
+
+function renderChartComp(){
+  var progData=GERS.map(function(g){return getProgGer(g).reduce(function(a,b){return a+b;},0);});
+  var ejecData=GERS.map(function(g){return ejecPPTO_data[g]?ejecPPTO_data[g].total:0;});
+  if(chartComp) chartComp.destroy();
+  chartComp=new Chart(document.getElementById('chartComp'),{type:'bar',data:{labels:GERS,datasets:[{label:'Programado S/',data:progData,backgroundColor:'rgba(226,232,240,.8)',borderRadius:5},{label:'Ejecutado S/',data:ejecData,backgroundColor:GERS.map(function(g){return COLS_GER[g];}),borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'Sora',size:11},padding:14}}},scales:{x:{grid:{display:false},ticks:{font:{family:'Sora',size:12}}},y:{grid:{color:'#f1f5f9'},ticks:{font:{family:'Sora',size:10},callback:function(v){return 'S/'+fmtN(v);}},beginAtZero:true}}}});
+}
+
+function renderChartTorta(){
+  var ejecData=GERS.map(function(g){return ejecPPTO_data[g]?ejecPPTO_data[g].total:0;});
+  var totalE=ejecData.reduce(function(a,b){return a+b;},0);
+  var saldo=Math.max(0,TOTAL_PROG-totalE);
+  if(chartTorta) chartTorta.destroy();
+  chartTorta=new Chart(document.getElementById('chartTorta'),{type:'doughnut',data:{labels:GERS.concat(['Saldo']),datasets:[{data:ejecData.concat([saldo]),backgroundColor:['rgba(37,99,168,.85)','rgba(5,150,105,.85)','rgba(217,119,6,.85)','rgba(124,58,237,.85)','rgba(226,232,240,.7)'],borderWidth:2,borderColor:'#fff',hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'Sora',size:11},padding:12}},tooltip:{callbacks:{label:function(ctx){return ctx.label+': S/ '+fmtN(ctx.raw);}}}},cutout:'62%'}});
+}
+
+function renderPOI(){
+  // Progress bars
+  var tipos=['F','M','A','O'];
+  var tiposL=['Formulación','Monitoreo','Asist. Técnica','Otras'];
+  var tipoCols=['#2563a8','#059669','#d97706','#7c3aed'];
+  var totEj={F:0,M:0,A:0,O:0},totMe={F:0,M:0,A:0,O:0};
+  GERS.forEach(function(g){tipos.forEach(function(t){totEj[t]+=(ejecPOI_data[g]||{})[t]||0;totMe[t]+=METAS[g][t]||0;});});
+  var ph='';
+  tipos.forEach(function(t,i){
+    var e=totEj[t],m=totMe[t];
+    var p=m>0?Math.min(100,Math.round(e/m*100)):0;
+    var c=p>=100?'var(--verde)':p>=50?'var(--naranja)':'var(--azulc)';
+    ph+='<div class="poi-row"><div class="poi-hdr"><span class="poi-name">'+tiposL[i]+'</span><span class="poi-val" style="color:'+c+'">'+e+'/'+m+' ('+p+'%)</span></div><div class="poi-bar"><div class="poi-fill" style="width:'+p+'%;background:'+c+';"></div></div></div>';
+  });
+  document.getElementById('poiProg').innerHTML=ph;
+
+  // Chart POI
+  var datasets=tipos.map(function(t,i){return{label:tiposL[i],data:GERS.map(function(g){return (ejecPOI_data[g]||{})[t]||0;}),backgroundColor:tipoCols[i],borderRadius:5};});
+  if(chartPOI) chartPOI.destroy();
+  chartPOI=new Chart(document.getElementById('chartPOI'),{type:'bar',data:{labels:GERS,datasets:datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'Sora',size:11},padding:12}}},scales:{x:{grid:{display:false},ticks:{font:{family:'Sora',size:12}}},y:{grid:{color:'#f1f5f9'},ticks:{font:{family:'Sora',size:11}},beginAtZero:true}}}});
+
+  // Tabla POI
+  var html='';
+  var bCls={GPNAIS:'b1',GSAM:'b2',GAPR:'b3',OIIS:'b4'};
+  GERS.forEach(function(g){
+    var d=ejecPOI_data[g]||{F:0,M:0,A:0,O:0};
+    var tE=d.F+d.M+d.A+d.O;
+    var tM=METAS[g].F+METAS[g].M+METAS[g].A+METAS[g].O;
+    var p=pctC(tE,tM); var c=pctColor(p);
+    html+='<tr><td><span class="badge '+bCls[g]+'">'+g+'</span></td>';
+    html+='<td>'+d.F+'</td><td style="color:var(--gc);">'+METAS[g].F+'</td>';
+    html+='<td>'+d.M+'</td><td style="color:var(--gc);">'+METAS[g].M+'</td>';
+    html+='<td>'+d.A+'</td><td style="color:var(--gc);">'+METAS[g].A+'</td>';
+    html+='<td>'+d.O+'</td><td style="color:var(--gc);">'+METAS[g].O+'</td>';
+    html+='<td style="font-weight:700;">'+tE+'</td><td style="color:var(--gc);">'+tM+'</td>';
+    html+='<td><span style="font-weight:700;color:'+c+';">'+p+'%</span></td></tr>';
+  });
+  document.getElementById('tabPOI').innerHTML=html;
+}
+
+function renderConsolidado(){
+  var headers='<thead><tr><th>Gerencia/Sub Gerencia</th>';
+  CONCEPTOS.forEach(function(c){
+    headers+='<th style="background:#fef9c3;color:#854d0e;">Prog. '+c+'</th>';
+    headers+='<th style="background:#dcfce7;color:#166534;">Ejec. '+c+'</th>';
+    headers+='<th style="background:#ffedd5;color:#c2410c;">Saldo '+c+'</th>';
+  });
+  headers+='<th style="background:#fef9c3;color:#854d0e;font-size:12px;">TOTAL PROG.</th><th style="background:#dcfce7;color:#166534;font-size:12px;">TOTAL EJEC.</th><th style="background:#fef9c3;color:#854d0e;font-size:12px;">% EJEC.</th></tr></thead>';
+  var body='<tbody>';
+  var totP=new Array(CONCEPTOS.length).fill(0),totE=new Array(CONCEPTOS.length).fill(0);
+  var bCls={GPNAIS:'b1',GSAM:'b2',GAPR:'b3',OIIS:'b4'};
+  GERS.forEach(function(g){
+    Object.keys(PROG_PPTO[g]).forEach(function(sg){
+      var prog=PROG_PPTO[g][sg];
+      var ejecCons=(ejecPPTO_data[g]&&ejecPPTO_data[g].sgs[sg])?ejecPPTO_data[g].sgs[sg].cons:{};
+      var tP=prog.reduce(function(a,b){return a+b;},0);
+      var tE=CONCEPTOS.reduce(function(s,c){return s+(ejecCons[c]||0);},0);
+      prog.forEach(function(v,i){totP[i]+=v;});
+      CONCEPTOS.forEach(function(c,i){totE[i]+=(ejecCons[c]||0);});
+      var p=pctC(tE,tP); var col=pctColor(p);
+      body+='<tr><td style="white-space:nowrap;"><span class="badge '+bCls[g]+'">'+g+'</span> <small style="color:var(--gc);">'+sg+'</small></td>';
+      CONCEPTOS.forEach(function(c,i){
+        var pr=prog[i]||0; var ej=ejecCons[c]||0; var s=pr-ej;
+        var sc=s>0?'color:var(--naranja)':s<0?'color:var(--rojo);font-weight:700':'color:var(--gc)';
+        body+='<td>'+(pr?fmtN(pr):'-')+'</td><td style="color:#166534;font-weight:700;">'+(ej?fmtN(ej):'0')+'</td><td style="'+sc+';font-weight:700;">'+fmtN(s)+'</td>';
+      });
+      body+='<td style="font-weight:700;">'+fmtN(tP)+'</td><td style="color:#166534;font-weight:700;">'+fmtN(tE)+'</td>';
+      body+='<td style="color:'+col+';font-weight:700;background:#fef9c3;">'+p+'%</td></tr>';
+    });
+  });
+  // Total
+  var ttP=totP.reduce(function(a,b){return a+b;},0);
+  var ttE=totE.reduce(function(a,b){return a+b;},0);
+  body+='<tr><td><strong>TOTAL GCPS</strong></td>';
+  totP.forEach(function(v,i){var s=totP[i]-totE[i];var sc=s>0?'color:var(--naranja)':s<0?'color:var(--rojo);font-weight:700':'color:var(--gc)';body+='<td><strong>'+fmtN(v)+'</strong></td><td style="color:#166534;font-weight:700;"><strong>'+fmtN(totE[i])+'</strong></td><td style="'+sc+';font-weight:700;"><strong>'+fmtN(s)+'</strong></td>';});
+  var tp=pctC(ttE,ttP);
+  body+='<td style="font-weight:700;">'+fmtN(ttP)+'</td><td style="color:#166534;font-weight:700;">'+fmtN(ttE)+'</td><td style="font-weight:800;font-size:13px;background:#fef9c3;color:'+pctColor(tp)+';">'+tp+'%</td></tr>';
+  body+='</tbody>';
+  document.getElementById('tabConsolidado').innerHTML=headers+body;
+}
+
+function verTab(id,btn){
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('on');});
+  document.getElementById('tab-'+id).classList.add('on');
+  btn.classList.add('on');
+  setTimeout(function(){
+    if(chartComp) chartComp.resize();
+    if(chartTorta) chartTorta.resize();
+    if(chartPOI) chartPOI.resize();
+  },100);
+}
+
+cargarTodo();
+setInterval(cargarTodo,60000);
+</script>
+</body>
+</html>
