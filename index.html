@@ -195,19 +195,19 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--gs);}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;">
       <div class="card">
         <div class="sec-title" id="titulo-F" style="border-left-color:#ef4444;">Formulación</div>
-        <div style="position:relative;height:220px;"><canvas id="chartF"></canvas></div>
+        <div style="position:relative;height:260px;"><canvas id="chartF"></canvas></div>
       </div>
       <div class="card">
         <div class="sec-title" id="titulo-M" style="border-left-color:#2563a8;">Monitoreo / Supervisión</div>
-        <div style="position:relative;height:220px;"><canvas id="chartM"></canvas></div>
+        <div style="position:relative;height:260px;"><canvas id="chartM"></canvas></div>
       </div>
       <div class="card">
         <div class="sec-title" id="titulo-A" style="border-left-color:#d97706;">Asistencia Técnica</div>
-        <div style="position:relative;height:220px;"><canvas id="chartA"></canvas></div>
+        <div style="position:relative;height:260px;"><canvas id="chartA"></canvas></div>
       </div>
       <div class="card">
         <div class="sec-title" id="titulo-O" style="border-left-color:#7c3aed;">Otras Actividades</div>
-        <div style="position:relative;height:220px;"><canvas id="chartO"></canvas></div>
+        <div style="position:relative;height:260px;"><canvas id="chartO"></canvas></div>
       </div>
     </div>
   </div>
@@ -225,7 +225,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--gs);}
       <div class="comp-card" id="cc-GCPS" onclick="drillGer('TODAS')">
         <div class="comp-card-title" style="color:var(--azul);">GCPS — TOTAL <span class="click-hint"><span class="dot"></span>explorar</span></div>
         <div class="cbar-wrap">
-          <div class="cbar-label"><span>Programado</span><span id="cc-GCPS-p">S/ —</span></div>
+          <div class="cbar-label"><span>PIA</span><span id="cc-GCPS-p">S/ —</span></div>
           <div class="cbar-bg"><div class="cbar-fill" id="cc-GCPS-pb" style="background:#cbd5e1;width:100%;"></div></div>
         </div>
         <div class="cbar-wrap">
@@ -250,20 +250,6 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--gs);}
         <div class="cpct" id="cc-GPNAIS-pct" style="color:#2563a8;">0%</div>
       </div>
 
-      <div class="comp-card" id="cc-GSAM" onclick="drillGer('GSAM')">
-        <div class="comp-card-title" style="color:#065f46;">GSAM <span class="click-hint"><span class="dot" style="background:#065f46;"></span>explorar</span></div>
-        <div class="cbar-wrap">
-          <div class="cbar-label"><span>Prog.</span><span id="cc-GSAM-p">—</span></div>
-          <div class="cbar-bg"><div class="cbar-fill" id="cc-GSAM-pb" style="background:#a7f3d0;width:100%;"></div></div>
-        </div>
-        <div class="cbar-wrap">
-          <div class="cbar-label"><span>Ejec.</span><span id="cc-GSAM-e">—</span></div>
-          <div class="cbar-bg"><div class="cbar-fill" id="cc-GSAM-eb" style="background:var(--verde);width:0%;"></div></div>
-        </div>
-        <div class="cpct-bar"><div class="cpct-fill" id="cc-GSAM-pf" style="background:var(--verde);width:0%;"></div></div>
-        <div class="cpct" id="cc-GSAM-pct" style="color:var(--verde);">0%</div>
-      </div>
-
       <div class="comp-card" id="cc-GAPR" onclick="drillGer('GAPR')">
         <div class="comp-card-title" style="color:#92400e;">GAPR <span class="click-hint"><span class="dot" style="background:#92400e;"></span>explorar</span></div>
         <div class="cbar-wrap">
@@ -276,6 +262,20 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--gs);}
         </div>
         <div class="cpct-bar"><div class="cpct-fill" id="cc-GAPR-pf" style="background:var(--naranja);width:0%;"></div></div>
         <div class="cpct" id="cc-GAPR-pct" style="color:var(--naranja);">0%</div>
+      </div>
+
+      <div class="comp-card" id="cc-GSAM" onclick="drillGer('GSAM')">
+        <div class="comp-card-title" style="color:#065f46;">GSAM <span class="click-hint"><span class="dot" style="background:#065f46;"></span>explorar</span></div>
+        <div class="cbar-wrap">
+          <div class="cbar-label"><span>Prog.</span><span id="cc-GSAM-p">—</span></div>
+          <div class="cbar-bg"><div class="cbar-fill" id="cc-GSAM-pb" style="background:#a7f3d0;width:100%;"></div></div>
+        </div>
+        <div class="cbar-wrap">
+          <div class="cbar-label"><span>Ejec.</span><span id="cc-GSAM-e">—</span></div>
+          <div class="cbar-bg"><div class="cbar-fill" id="cc-GSAM-eb" style="background:var(--verde);width:0%;"></div></div>
+        </div>
+        <div class="cpct-bar"><div class="cpct-fill" id="cc-GSAM-pf" style="background:var(--verde);width:0%;"></div></div>
+        <div class="cpct" id="cc-GSAM-pct" style="color:var(--verde);">0%</div>
       </div>
 
       <div class="comp-card" id="cc-OIIS" onclick="drillGer('OIIS')">
@@ -332,18 +332,8 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--gs);}
         <div class="card">
           <div class="sec-title">Distribución Ejecutada</div>
           <div class="chart-wrap ch280"><canvas id="chartTorta"></canvas></div>
+          <div id="torta-leyenda" style="padding:4px 4px 0;"></div>
         </div>
-      </div>
-    </div>
-
-    <!-- GRÁFICO EJECUCIÓN PRESUPUESTAL — siempre visible al final -->
-    <div class="card" style="margin-bottom:20px;">
-      <div class="sec-title">Ejecución Presupuestal por Gerencia <small>línea punteada = meta 50%</small></div>
-      <div id="ejec-barras" style="padding:8px 0;"></div>
-      <div style="display:flex;align-items:center;gap:24px;margin-top:14px;padding-top:12px;border-top:1px solid var(--borde);flex-wrap:wrap;">
-        <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--gm);font-weight:600;"><div style="width:16px;height:12px;border-radius:3px;background:#4caf50;"></div> En meta (≥50%)</div>
-        <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--gm);font-weight:600;"><div style="width:16px;height:12px;border-radius:3px;background:#d97706;"></div> Atención (&lt;50%)</div>
-        <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--gm);font-weight:600;"><div style="width:2px;height:16px;border-left:2px dashed #64748b;"></div> Meta 50%</div>
       </div>
     </div>
 
@@ -381,7 +371,7 @@ var SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6I
 
 var METAS={GPNAIS:{F:19,M:11,A:68,O:0},GAPR:{F:6,M:18,A:18,O:1},GSAM:{F:2,M:23,A:15,O:0},OIIS:{F:1,M:0,A:5,O:6}};
 var TOTAL_PROG=558676;
-var GERS=['GPNAIS','GSAM','GAPR','OIIS'];
+var GERS=['GPNAIS','GAPR','GSAM','OIIS'];
 var CONCEPTOS=['Viaticos','Pasajes','Locadores','Alimentos','Otros Servicios'];
 var COLS_GER={GPNAIS:'#2563a8',GSAM:'#059669',GAPR:'#d97706',OIIS:'#7c3aed'};
 
@@ -423,7 +413,10 @@ function cargarTodo(){
     renderChartComp();
     renderChartTorta();
     renderPOI();
-    renderConsolidado();
+    // Consolidado solo se renderiza si el tab está visible
+    if(document.getElementById('tab-consolidado').classList.contains('on')){
+      renderConsolidado();
+    }
     document.getElementById('lastUpd').textContent=new Date().toLocaleTimeString('es-PE');
   });
 }
@@ -562,15 +555,88 @@ function renderChartComp(){
   var progData=GERS.map(function(g){return getProgGer(g).reduce(function(a,b){return a+b;},0);});
   var ejecData=GERS.map(function(g){return ejecPPTO_data[g]?ejecPPTO_data[g].total:0;});
   if(chartComp) chartComp.destroy();
-  chartComp=new Chart(document.getElementById('chartComp'),{type:'bar',data:{labels:GERS,datasets:[{label:'Programado S/',data:progData,backgroundColor:'rgba(226,232,240,.8)',borderRadius:5},{label:'Ejecutado S/',data:ejecData,backgroundColor:GERS.map(function(g){return COLS_GER[g];}),borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'Sora',size:11},padding:14}}},scales:{x:{grid:{display:false},ticks:{font:{family:'Sora',size:12}}},y:{grid:{color:'#f1f5f9'},ticks:{font:{family:'Sora',size:10},callback:function(v){return 'S/'+fmtN(v);}},beginAtZero:true}}}});
+  chartComp=new Chart(document.getElementById('chartComp'),{
+    type:'bar',
+    data:{
+      labels:GERS,
+      datasets:[
+        {label:'PIA S/',data:progData,backgroundColor:'rgba(100,116,139,.75)',borderRadius:5},
+        {label:'Ejecutado S/',data:ejecData,backgroundColor:GERS.map(function(g){return COLS_GER[g];}),borderRadius:5}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      layout:{padding:{top:24}},
+      plugins:{legend:{position:'bottom',labels:{font:{family:'Sora',size:11},padding:14}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{family:'Sora',size:12}}},
+        y:{grid:{color:'#f1f5f9'},ticks:{font:{family:'Sora',size:10},callback:function(v){return 'S/'+fmtN(v);}},beginAtZero:true,grace:'15%'}
+      }
+    },
+    plugins:[{
+      id:'numTop',
+      afterDatasetsDraw:function(chart){
+        var ctx2=chart.ctx;
+        chart.data.datasets.forEach(function(ds,di){
+          chart.getDatasetMeta(di).data.forEach(function(bar,j){
+            var val=ds.data[j];
+            if(!val) return;
+            ctx2.save();
+            ctx2.fillStyle=di===0?'#475569':COLS_GER[GERS[j]];
+            ctx2.font='600 10px Sora,sans-serif';
+            ctx2.textAlign='center';
+            ctx2.textBaseline='bottom';
+            ctx2.fillText('S/'+fmtN(val), bar.x, bar.y-2);
+            ctx2.restore();
+          });
+        });
+      }
+    }]
+  });
 }
 
 function renderChartTorta(){
   var ejecData=GERS.map(function(g){return ejecPPTO_data[g]?ejecPPTO_data[g].total:0;});
   var totalE=ejecData.reduce(function(a,b){return a+b;},0);
   var saldo=Math.max(0,TOTAL_PROG-totalE);
+  var COLS_TORTA=['rgba(37,99,168,.9)','rgba(217,119,6,.9)','rgba(5,150,105,.9)','rgba(124,58,237,.9)','rgba(148,163,184,.8)'];
   if(chartTorta) chartTorta.destroy();
-  chartTorta=new Chart(document.getElementById('chartTorta'),{type:'doughnut',data:{labels:GERS.concat(['Saldo']),datasets:[{data:ejecData.concat([saldo]),backgroundColor:['rgba(37,99,168,.85)','rgba(5,150,105,.85)','rgba(217,119,6,.85)','rgba(124,58,237,.85)','rgba(226,232,240,.7)'],borderWidth:2,borderColor:'#fff',hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'Sora',size:11},padding:12}},tooltip:{callbacks:{label:function(ctx){return ctx.label+': S/ '+fmtN(ctx.raw);}}}},cutout:'62%'}});
+  chartTorta=new Chart(document.getElementById('chartTorta'),{
+    type:'doughnut',
+    data:{
+      labels:GERS.concat(['Saldo']),
+      datasets:[{data:ejecData.concat([saldo]),backgroundColor:COLS_TORTA,borderWidth:2,borderColor:'#fff',hoverOffset:8}]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:function(ctx){
+          var tot=ejecData.reduce(function(a,b){return a+b;},0)+saldo;
+          var pct=tot>0?(ctx.raw/tot*100).toFixed(1):'0';
+          return ctx.label+': S/'+fmtN(ctx.raw)+' ('+pct+'%)';
+        }}}
+      },
+      cutout:'58%'
+    }
+  });
+  // Leyenda personalizada con montos y colores
+  var allLabels=GERS.concat(['Saldo']);
+  var allData=ejecData.concat([saldo]);
+  var totalTorta=allData.reduce(function(a,b){return a+b;},0);
+  var legHtml='<div style="display:flex;flex-direction:column;gap:7px;margin-top:10px;">';
+  allLabels.forEach(function(lbl,i){
+    var pct=totalTorta>0?(allData[i]/totalTorta*100).toFixed(1):'0';
+    legHtml+='<div style="display:flex;align-items:center;gap:8px;">';
+    legHtml+='<div style="width:12px;height:12px;border-radius:3px;background:'+COLS_TORTA[i]+';flex-shrink:0;"></div>';
+    legHtml+='<div style="flex:1;font-size:11px;font-weight:700;color:var(--gm);">'+lbl+'</div>';
+    legHtml+='<div style="font-size:11px;font-weight:800;color:'+COLS_TORTA[i]+';">S/'+fmtN(allData[i])+'</div>';
+    legHtml+='<div style="font-size:10px;color:var(--gc);min-width:36px;text-align:right;">'+pct+'%</div>';
+    legHtml+='</div>';
+  });
+  legHtml+='</div>';
+  var legEl=document.getElementById('cons-torta-leyenda');
+  if(legEl) legEl.innerHTML=legHtml;
 }
 
 function renderAlertas(){
@@ -668,14 +734,15 @@ function renderPOI(){
     aftaHtml+='<div class="afta-pct-top" style="color:'+barCol+';margin-top:0;">'+pct.toFixed(1)+'%</div>';
     aftaHtml+='</div>';
     aftaHtml+='<div class="afta-meta-txt">'+ej+' / '+me+' metas anuales</div>';
-    aftaHtml+='<div class="afta-track"><div class="afta-fill" style="width:'+pct+'%;background:'+barCol+';max-width:100%;"></div>';
-    aftaHtml+='<div class="afta-badge-wrap" style="right:-38px;"><span class="afta-badge" style="background:'+badgeBg+';">'+Math.round(semPct)+'%</span></div></div>';
+    aftaHtml+='<div class="afta-track"><div class="afta-fill" style="width:'+pct+'%;background:'+barCol+';max-width:100%;"></div></div>';
     if(idx<tiposConfig.length-1) aftaHtml+='<hr class="afta-sep">';
     aftaHtml+='</div>';
   });
   document.getElementById('aftaWrap').innerHTML=aftaHtml;
 
   // ── 4 GRÁFICOS DE BARRAS AGRUPADAS ──
+  var COLORES_EJEC={F:'#d4b896',M:'#d4b896',A:'#d4b896',O:'#d4b896'};
+  var COL_PROG='#1e3a5f';
   var chartRefs={chartF:chartF,chartM:chartM,chartA:chartA,chartO:chartO};
 
   tiposConfig.forEach(function(tp){
@@ -698,17 +765,17 @@ function renderPOI(){
           {
             label:'Programado (Meta)',
             data:progData,
-            backgroundColor:'rgba(148,163,184,.45)',
-            borderColor:'rgba(148,163,184,.9)',
-            borderWidth:1.5,
+            backgroundColor:COL_PROG,
+            borderColor:COL_PROG,
+            borderWidth:0,
             borderRadius:5,
             borderSkipped:false
           },
           {
             label:'Ejecutado',
             data:ejecData,
-            backgroundColor:tp.col,
-            borderColor:tp.col,
+            backgroundColor:'#d4b896',
+            borderColor:'#d4b896',
             borderWidth:0,
             borderRadius:5,
             borderSkipped:false
@@ -731,9 +798,11 @@ function renderPOI(){
           y:{
             grid:{color:'#e8f0f8'},
             ticks:{font:{family:'Sora',size:11},stepSize:1,callback:function(v){return Number.isInteger(v)?v:'';}},
-            beginAtZero:true
+            beginAtZero:true,
+            grace:'18%'
           }
-        }
+        },
+        layout:{padding:{top:20}}
       },
       plugins:[{
         id:'numberOnTop',
@@ -745,7 +814,7 @@ function renderPOI(){
               var val=dataset.data[j];
               if(val===0) return;
               ctx2.save();
-              ctx2.fillStyle=i===0?'#64748b':tp.col;
+              ctx2.fillStyle=i===0?'#1e3a5f':'#8b6840';
               ctx2.font='700 12px Sora, sans-serif';
               ctx2.textAlign='center';
               ctx2.textBaseline='bottom';
@@ -828,7 +897,7 @@ function renderConsolidado(){
 
   // ── KPIs ──
   var kpis=[
-    {ico:'💰',lbl:'Total Programado GCPS',val:fmtS(ttProg),col:'#1a4a7a',bg:'#dbeafe'},
+    {ico:'💰',lbl:'Total PIA 2026',val:fmtS(ttProg),col:'#1a4a7a',bg:'#dbeafe'},
     {ico:'✅',lbl:'Total Ejecutado GCPS', val:fmtS(ttEjec),col:'#059669',bg:'#d1fae5'},
     {ico:'📊',lbl:'Saldo Disponible',     val:fmtS(ttSaldo),col:ttCol,bg:'#fef9c3',sub:ttPct+'% ejecutado'}
   ];
@@ -954,7 +1023,7 @@ function renderConsolidado(){
   resHtml+='<td style="padding:8px 10px;text-align:right;color:'+ttCol+';">'+ttPct+'%</td>';
   resHtml+='</tr>';
   resHtml+='</tbody></table></div>';
-  document.getElementById('cons-resena').innerHTML=resHtml;
+  document.getElementById('cons-resena').innerHTML='<div style="font-size:11px;font-weight:700;color:#475569;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid var(--azulm);display:inline-block;">📋 Presupuesto Institucional de Apertura PIA 2026 × Partida GCPS</div>'+resHtml;
 
   // ── TORTA distribución ejecutada ──
   if(chartConsTorta) chartConsTorta.destroy();
@@ -990,9 +1059,13 @@ function verTab(id,btn){
     if(chartM) chartM.resize();
     if(chartA) chartA.resize();
     if(chartO) chartO.resize();
-    if(chartConsTorta) chartConsTorta.resize();
-    if(chartConsBarras) chartConsBarras.resize();
-  },100);
+    if(id==='consolidado'){
+      renderConsolidado();
+    } else {
+      if(chartConsTorta) chartConsTorta.resize();
+      if(chartConsBarras) chartConsBarras.resize();
+    }
+  },120);
 }
 
 cargarTodo();
