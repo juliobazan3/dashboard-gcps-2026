@@ -370,16 +370,25 @@ var SURL='https://krikgncyptyjjutzaufz.supabase.co';
 var SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyaWtnbmN5cHR5amp1dHphdWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NzYzOTYsImV4cCI6MjA5NjE1MjM5Nn0.8Kzgpf8UhASf-hgN7jix-82ZeNsUpE7R-EF6zpZCZCI';
 
 var METAS={GPNAIS:{F:19,M:11,A:68,O:0},GAPR:{F:6,M:18,A:18,O:1},GSAM:{F:2,M:23,A:15,O:0},OIIS:{F:1,M:0,A:5,O:6}};
-var TOTAL_PROG=558676;
+var TOTAL_PROG=546564;
 var GERS=['GPNAIS','GAPR','GSAM','OIIS'];
 var CONCEPTOS=['Viaticos','Pasajes','Locadores','Alimentos','Otros Servicios'];
 var COLS_GER={GPNAIS:'#2563a8',GSAM:'#059669',GAPR:'#d97706',OIIS:'#7c3aed'};
 
+// PROG_PPTO [Viaticos, Pasajes, Locadores, Alimentos, Otros Servicios]
+// Calculado fila a fila del Excel — TOTALES VERIFICADOS:
+// GPNAIS=176272 GAPR=196329 GSAM=105112 OIIS=68851 → GCPS=546564
+// Concepto: Viat=89650 Pas=67788 Loc=241500 Ali=64126 Otr=83500
 var PROG_PPTO={
-  'GPNAIS':{'SGPE':[64000,0,0,0,0],'SGNAPS':[37364,6191,0,22208,7446],'SGNADYT':[0,0,34000,3000,0],'SGNSS':[5760,6915,0,1500,0]},
-  'GSAM':{'GENERAL':[16000,20290,63500,5322,0]},
-  'GAPR':{'SGMC':[8960,9400,0,0,40554],'SGPSYPE':[0,0,0,15965,10000],'SGCPAP':[16258,14592,80000,0,600]},
-  'OIIS':{'GENERAL':[16520,10400,0,16231,25700]}
+  'GPNAIS':{'SGPE'   :[0,     0,     64000,  0,     0    ],
+            'SGNAPS' :[26152, 6191,  0,      22108, 6646 ],
+            'SGNADYT':[0,     0,     34000,  3000,  0    ],
+            'SGNSS'  :[5760,  6915,  0,      1500,  0    ]},
+  'GSAM':  {'GENERAL':[16000, 20290, 63500,  5322,  0    ]},
+  'GAPR':  {'SGMC'   :[8960,  9400,  0,      0,     40554],
+            'SGPSYPE':[0,     0,     0,      15965, 10000],
+            'SGCPAP' :[16258, 14592, 80000,  0,     600  ]},
+  'OIIS':  {'GENERAL':[16520, 10400, 0,      16231, 25700]}
 };
 
 var chartPOI=null,chartComp=null,chartTorta=null;
@@ -401,19 +410,33 @@ function pctC(e,p){return p>0?Math.min(100,((e/p)*100)).toFixed(1):'0.0';}
 function pctColor(p){var v=parseFloat(p);return v>=80?'var(--verde)':v>=40?'var(--naranja)':'var(--rojo)';}
 
 function cargarTodo(){
+  // Datos POI vienen directo del Excel (fuente: Seguimiento POI 2026)
+  var poiHardcoded=[
+    // GPNAIS: F=2, M=4, A=28, O=0
+    {gerencia:'GPNAIS',tipo_actividad:'Formulación',cantidad:2},
+    {gerencia:'GPNAIS',tipo_actividad:'Monitoreo',cantidad:4},
+    {gerencia:'GPNAIS',tipo_actividad:'Asistencia Técnica',cantidad:28},
+    // GAPR: F=0, M=11, A=5, O=0
+    {gerencia:'GAPR',tipo_actividad:'Monitoreo',cantidad:11},
+    {gerencia:'GAPR',tipo_actividad:'Asistencia Técnica',cantidad:5},
+    // GSAM: F=0, M=6, A=5, O=0
+    {gerencia:'GSAM',tipo_actividad:'Monitoreo',cantidad:6},
+    {gerencia:'GSAM',tipo_actividad:'Asistencia Técnica',cantidad:5},
+    // OIIS: F=0, M=0, A=2, O=2
+    {gerencia:'OIIS',tipo_actividad:'Asistencia Técnica',cantidad:2},
+    {gerencia:'OIIS',tipo_actividad:'Otras',cantidad:2}
+  ];
+
   Promise.all([
-    apiGet('ejecucion_poi?select=gerencia,tipo_actividad,cantidad'),
     apiGet('ejecucion_presupuestal?select=gerencia,sub_gerencia,concepto,monto')
   ]).then(function(res){
-    var poi=Array.isArray(res[0])?res[0]:[];
-    var ppto=Array.isArray(res[1])?res[1]:[];
-    procesarPOI(poi);
+    var ppto=Array.isArray(res[0])?res[0]:[];
+    procesarPOI(poiHardcoded);
     procesarPPTO(ppto);
     renderCompCards();
     renderChartComp();
     renderChartTorta();
     renderPOI();
-    // Consolidado solo se renderiza si el tab está visible
     if(document.getElementById('tab-consolidado').classList.contains('on')){
       renderConsolidado();
     }
@@ -425,12 +448,16 @@ function procesarPOI(poi){
   ejecPOI_data={};
   GERS.forEach(function(g){ejecPOI_data[g]={F:0,M:0,A:0,O:0};});
   poi.forEach(function(r){
-    if(!ejecPOI_data[r.gerencia]) return;
-    var t=r.tipo_actividad||'';
-    if(t.indexOf('ormulac')>-1) ejecPOI_data[r.gerencia].F+=r.cantidad;
-    else if(t.indexOf('onitoreo')>-1||t.indexOf('upervisi')>-1) ejecPOI_data[r.gerencia].M+=r.cantidad;
-    else if(t.indexOf('sistencia')>-1) ejecPOI_data[r.gerencia].A+=r.cantidad;
-    else ejecPOI_data[r.gerencia].O+=r.cantidad;
+    var g=(r.gerencia||'').trim();
+    if(!ejecPOI_data[g]) return;
+    // Acepta tipo_actividad o tipo
+    var t=(r.tipo_actividad||r.tipo||'').toLowerCase();
+    // Acepta cantidad o ejecucion o count
+    var cant=parseFloat(r.cantidad||r.ejecucion||r.count||1)||1;
+    if(t.indexOf('ormulac')>-1)                              ejecPOI_data[g].F+=cant;
+    else if(t.indexOf('onitoreo')>-1||t.indexOf('upervisi')>-1) ejecPOI_data[g].M+=cant;
+    else if(t.indexOf('sistencia')>-1)                       ejecPOI_data[g].A+=cant;
+    else                                                      ejecPOI_data[g].O+=cant;
   });
 }
 
@@ -444,17 +471,32 @@ function procesarPPTO(ppto){
     });
   });
   ppto.forEach(function(r){
-    var g=(r.gerencia||'').split('-')[0];
-    var sg=r.sub_gerencia||'GENERAL';
+    // Normaliza gerencia: quita espacios, toma antes del guion
+    var g=(r.gerencia||'').trim().split('-')[0].trim();
+    var sg=(r.sub_gerencia||'GENERAL').trim();
+    var concepto=(r.concepto||'').trim();
+    var m=parseFloat(String(r.monto).replace(/,/g,''))||0;
     if(!ejecPPTO_data[g]) return;
-    if(!ejecPPTO_data[g].sgs[sg]) ejecPPTO_data[g].sgs[sg]={total:0,cons:{}};
-    var m=Number(r.monto);
+    // Asegura que exista la sub_gerencia
+    if(!ejecPPTO_data[g].sgs[sg]){
+      ejecPPTO_data[g].sgs[sg]={total:0,cons:{}};
+      CONCEPTOS.forEach(function(c){ejecPPTO_data[g].sgs[sg].cons[c]=0;});
+    }
     ejecPPTO_data[g].total+=m;
     ejecPPTO_data[g].sgs[sg].total+=m;
-    if(ejecPPTO_data[g].sgs[sg].cons[r.concepto]!==undefined)
-      ejecPPTO_data[g].sgs[sg].cons[r.concepto]+=m;
-    else
-      ejecPPTO_data[g].sgs[sg].cons[r.concepto]=(ejecPPTO_data[g].sgs[sg].cons[r.concepto]||0)+m;
+    // Busca concepto por coincidencia parcial (por si varía mayúsculas o tildes)
+    var cKey=concepto;
+    var match=CONCEPTOS.find(function(c){
+      return c.toLowerCase()===concepto.toLowerCase()||
+             concepto.toLowerCase().indexOf(c.toLowerCase())>-1||
+             c.toLowerCase().indexOf(concepto.toLowerCase())>-1;
+    });
+    if(match) cKey=match;
+    if(ejecPPTO_data[g].sgs[sg].cons[cKey]!==undefined){
+      ejecPPTO_data[g].sgs[sg].cons[cKey]+=m;
+    } else {
+      ejecPPTO_data[g].sgs[sg].cons[cKey]=(ejecPPTO_data[g].sgs[sg].cons[cKey]||0)+m;
+    }
   });
 }
 
