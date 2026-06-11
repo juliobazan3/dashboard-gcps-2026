@@ -618,9 +618,26 @@ function renderChartComp(){
   if(chartComp) chartComp.destroy();
   chartComp=new Chart(document.getElementById('chartComp'),{type:'bar',
     data:{labels:GERS,datasets:[{label:'PIA S/',data:progData,backgroundColor:'rgba(100,116,139,.75)',borderRadius:5},{label:'Ejecutado S/',data:ejecData,backgroundColor:GERS.map(function(g){return COLS_GER[g];}),borderRadius:5}]},
-    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:24}},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:36}},
       plugins:{legend:{position:'bottom',labels:{font:{family:'Sora',size:11},padding:14}}},
-      scales:{x:{grid:{display:false},ticks:{font:{family:'Sora',size:12}}},y:{grid:{color:'#f1f5f9'},ticks:{font:{family:'Sora',size:10},callback:function(v){return 'S/'+fmtN(v);}},beginAtZero:true}}}});
+      scales:{x:{grid:{display:false},ticks:{font:{family:'Sora',size:12}}},y:{grid:{color:'#f1f5f9'},ticks:{font:{family:'Sora',size:10},callback:function(v){return 'S/'+fmtN(v);}},beginAtZero:true}}},
+    plugins:[{id:'labelsOnTop',afterDatasetsDraw:function(chart){
+      var ctx2=chart.ctx;
+      chart.data.datasets.forEach(function(ds,di){
+        chart.getDatasetMeta(di).data.forEach(function(bar,j){
+          var val=ds.data[j];
+          if(!val||val===0) return;
+          ctx2.save();
+          ctx2.fillStyle=di===0?'#475569':COLS_GER[GERS[j]]||'#2563a8';
+          ctx2.font='700 11px Sora,sans-serif';
+          ctx2.textAlign='center';
+          ctx2.textBaseline='bottom';
+          ctx2.fillText(fmtS(val),bar.x,bar.y-4);
+          ctx2.restore();
+        });
+      });
+    }}]
+  });
 }
 function renderChartTorta(){
   var ejecData=GERS.map(function(g){return ejecPPTO_data[g]?ejecPPTO_data[g].total:0;});
